@@ -26,7 +26,11 @@ import UIKit
     
     private var ratingButton = [UIButton]()
     
-    var rating = 0
+    var rating = 0 {
+        didSet {
+            updateButtonSelectionStates()
+        }
+    }
     
     //MARK: Initialization
     
@@ -43,7 +47,18 @@ import UIKit
     // Button Action
     
     @objc func ratingButtonTapped(button: UIButton) {
-        print("Button pressed 👍")
+        guard let index = ratingButton.firstIndex(of: button) else {
+            fatalError("The button, \(button), is not in the ratingButton array: \(ratingButton)")
+        }
+        
+        // Calculate the rating of the selected button
+        let selectedRating = index + 1
+        
+        if selectedRating == rating {
+            rating = 0
+        } else {
+            rating = selectedRating
+        }
     }
     
     //MARK: Private Methods
@@ -87,6 +102,14 @@ import UIKit
             
             // Add the new button to the rating button array
             ratingButton.append(button)
+        }
+        
+        updateButtonSelectionStates()
+    }
+    
+    private func updateButtonSelectionStates() {
+        for (index, button) in ratingButton.enumerated() {
+            button.isSelected = index < rating
         }
     }
 }
